@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Factory Method Demos — Food, Banking, E-commerce, Ride-Hailing</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--card-bg:#ffffff;--muted:#666;--accent:#0b66c3}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:18px; background:#f3f6fb; color:#111}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 18px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+    .card{background:var(--card-bg);border-radius:10px;padding:14px;box-shadow:0 2px 8px rgba(20,30,40,0.06)}
+    .card h2{font-size:16px;margin:0 0 10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+    select,input[type="text"],button{width:100%;padding:8px;border-radius:6px;border:1px solid #d6dbe6;margin-top:6px;font-size:14px}
+    button{cursor:pointer;background:var(--accent);color:#fff;border:0}
+    .list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .item{padding:10px;border-radius:8px;border:1px solid #e2e8f0;background:#fbfdff}
+    .item strong{display:block}
+    pre{background:#0b1220;color:#cfe8ff;padding:10px;border-radius:6px;overflow:auto;font-size:12px;margin-top:8px}
+    small.tip{color:var(--muted);display:block;margin-top:8px}
+    footer{margin-top:16px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Factory Method — 4 App Demos</h1>
+    <p class="lead">Create objects (users/accounts/products/rides) using small factory functions — no direct <code>new</code> scattered around UI logic.</p>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- Food Delivery -->
+  <section class="card" id="food-card">
+    <h2>Food Delivery App (Users)</h2>
+    <label for="food-type">Select type</label>
+    <select id="food-type">
+      <option>Customer</option>
+      <option>DeliveryPartner</option>
+      <option>Restaurant</option>
+    </select>
+    <label for="food-name">Name (optional)</label>
+    <input id="food-name" placeholder="e.g. Priya's Kitchen or Ravi" />
+    <button id="food-create">Create</button>
+    <small class="tip">Factory will create Customer / DeliveryPartner / Restaurant objects.</small>
+    <div class="list" id="food-list"></div>
+  </section>
+
+  <!-- Banking -->
+  <section class="card" id="bank-card">
+    <h2>Banking App (Accounts)</h2>
+    <label for="bank-type">Select account type</label>
+    <select id="bank-type">
+      <option>SavingsAccount</option>
+      <option>CurrentAccount</option>
+      <option>LoanAccount</option>
+    </select>
+    <label for="bank-initial">Initial amount / loan (optional)</label>
+    <input id="bank-initial" placeholder="e.g. 5000" type="text" />
+    <button id="bank-create">Create</button>
+    <small class="tip">Factory creates different account objects with their properties.</small>
+    <div class="list" id="bank-list"></div>
+  </section>
+
+  <!-- E-commerce -->
+  <section class="card" id="shop-card">
+    <h2>E-commerce App (Products)</h2>
+    <label for="shop-type">Select category</label>
+    <select id="shop-type">
+      <option>Electronics</option>
+      <option>Clothing</option>
+      <option>Book</option>
+    </select>
+    <label for="shop-name">Product name (optional)</label>
+    <input id="shop-name" placeholder="e.g. Wireless Headphones or Denim Jacket" />
+    <button id="shop-create">Create</button>
+    <small class="tip">Factory will return a product object of the selected category.</small>
+    <div class="list" id="shop-list"></div>
+  </section>
+
+  <!-- Ride-Hailing -->
+  <section class="card" id="ride-card">
+    <h2>Ride-Hailing App (Rides)</h2>
+    <label for="ride-type">Select ride type</label>
+    <select id="ride-type">
+      <option>Mini</option>
+      <option>Sedan</option>
+      <option>SUV</option>
+      <option>Auto</option>
+    </select>
+    <label for="ride-distance">Distance (km)</label>
+    <input id="ride-distance" type="text" placeholder="e.g. 5" />
+    <button id="ride-create">Create</button>
+    <small class="tip">Factory returns a ride object with computed fare (simple demo).</small>
+    <div class="list" id="ride-list"></div>
+  </section>
+</main>
+
+<footer>
+  Tip: This demonstrates how central factories keep object creation in one place. You can extend classes and factory logic without changing UI code.
+</footer>
+
+<script>
+  /** ---------- FOOD DELIVERY FACTORY ---------- **/
+  let foodId = 1;
+  class Customer {
+    constructor(name='Customer') { this.type='Customer'; this.name = name || `${this.type}-${foodId++}`; }
+    describe(){ return `A customer named ${this.name}`; }
+  }
+  class DeliveryPartner {
+    constructor(name='DeliveryPartner') { this.type='DeliveryPartner'; this.name = name || `${this.type}-${foodId++}`; this.vehicle = 'Bike'; }
+    describe(){ return `${this.name} (vehicle: ${this.vehicle})`; }
+  }
+  class Restaurant {
+    constructor(name='Restaurant') { this.type='Restaurant'; this.name = name || `${this.type}-${foodId++}`; this.menuSize = Math.floor(Math.random()*30) + 5; }
+    describe(){ return `${this.name} (menu items: ${this.menuSize})`; }
+  }
+  function FoodFactory(type, name) {
+    switch(type) {
+      case 'Customer': return new Customer(name || undefined);
+      case 'DeliveryPartner': return new DeliveryPartner(name || undefined);
+      case 'Restaurant': return new Restaurant(name || undefined);
+      default: throw new Error('Unknown Food type ' + type);
+    }
+  }
+
+  /** ---------- BANKING FACTORY ---------- **/
+  let acctId = 1001;
+  class SavingsAccount {
+    constructor(initial=0){ this.type='SavingsAccount'; this.id = acctId++; this.balance = Number(initial) || 0; this.interest = 0.04; }
+    describe(){ return `Savings #${this.id} — balance ₹${this.balance} (interest ${this.interest*100}%)`; }
+  }
+  class CurrentAccount {
+    constructor(initial=0){ this.type='CurrentAccount'; this.id = acctId++; this.balance = Number(initial) || 0; this.overdraft = 50000; }
+    describe(){ return `Current #${this.id} — balance ₹${this.balance} (overdraft ₹${this.overdraft})`; }
+  }
+  class LoanAccount {
+    constructor(loan=0){ this.type='LoanAccount'; this.id = acctId++; this.loanAmount = Number(loan) || 0; this.rate = 0.10; }
+    describe(){ return `Loan #${this.id} — loan ₹${this.loanAmount} (rate ${this.rate*100}%)`; }
+  }
+  function BankFactory(type, amount) {
+    switch(type) {
+      case 'SavingsAccount': return new SavingsAccount(amount);
+      case 'CurrentAccount': return new CurrentAccount(amount);
+      case 'LoanAccount': return new LoanAccount(amount);
+      default: throw new Error('Unknown Account type ' + type);
+    }
+  }
+
+  /** ---------- E-COMMERCE FACTORY ---------- **/
+  let productId = 5001;
+  class Electronics {
+    constructor(name='Gadget'){ this.category='Electronics'; this.id = productId++; this.name = name; this.warrantyMonths = 12; }
+    describe(){ return `${this.name} (#${this.id}) — Electronics, warranty ${this.warrantyMonths} months`; }
+  }
+  class Clothing {
+    constructor(name='Cloth'){ this.category='Clothing'; this.id = productId++; this.name = name; this.sizes=['S','M','L']; }
+    describe(){ return `${this.name} (#${this.id}) — Clothing, sizes ${this.sizes.join('/')}`; }
+  }
+  class Book {
+    constructor(name='Book'){ this.category='Book'; this.id = productId++; this.name = name; this.pages = 100 + Math.floor(Math.random()*400); }
+    describe(){ return `${this.name} (#${this.id}) — Book, ${this.pages} pages`; }
+  }
+  function ProductFactory(category, name) {
+    switch(category) {
+      case 'Electronics': return new Electronics(name || 'Electronics Item');
+      case 'Clothing': return new Clothing(name || 'Clothing Item');
+      case 'Book': return new Book(name || 'Book Title');
+      default: throw new Error('Unknown Product category ' + category);
+    }
+  }
+
+  /** ---------- RIDE-HAILING FACTORY ---------- **/
+  let rideId = 301;
+  class Mini { constructor(distance=1){ this.type='Mini'; this.id = rideId++; this.baseFare = 30; this.perKm = 9; this.distance = Number(distance)||0; } fare(){ return this.baseFare + this.perKm*this.distance; } describe(){ return `Mini — ${this.distance} km, fare ₹${this.fare().toFixed(2)}`; } }
+  class Sedan { constructor(distance=1){ this.type='Sedan'; this.id = rideId++; this.baseFare = 50; this.perKm = 12; this.distance = Number(distance)||0; } fare(){ return this.baseFare + this.perKm*this.distance; } describe(){ return `Sedan — ${this.distance} km, fare ₹${this.fare().toFixed(2)}`; } }
+  class SUV { constructor(distance=1){ this.type='SUV'; this.id = rideId++; this.baseFare = 80; this.perKm = 18; this.distance = Number(distance)||0; } fare(){ return this.baseFare + this.perKm*this.distance; } describe(){ return `SUV — ${this.distance} km, fare ₹${this.fare().toFixed(2)}`; } }
+  class Auto { constructor(distance=1){ this.type='Auto'; this.id = rideId++; this.baseFare = 20; this.perKm = 7; this.distance = Number(distance)||0; } fare(){ return this.baseFare + this.perKm*this.distance; } describe(){ return `Auto — ${this.distance} km, fare ₹${this.fare().toFixed(2)}`; } }
+  function RideFactory(type, distance) {
+    switch(type) {
+      case 'Mini': return new Mini(distance);
+      case 'Sedan': return new Sedan(distance);
+      case 'SUV': return new SUV(distance);
+      case 'Auto': return new Auto(distance);
+      default: throw new Error('Unknown Ride type ' + type);
+    }
+  }
+
+  /** ---------- Small UI helpers ---------- **/
+  function addToList(obj, listId) {
+    const container = document.getElementById(listId);
+    const el = document.createElement('div');
+    el.className = 'item';
+    const short = obj.describe ? obj.describe() : JSON.stringify(obj);
+    el.innerHTML = `<strong>${obj.type || obj.category || 'Object'}</strong>
+                    <div>${escapeHtml(short)}</div>
+                    <pre>${escapeHtml(JSON.stringify(obj, replacer, 2))}</pre>`;
+    container.prepend(el);
+  }
+
+  // JSON replacer to avoid showing functions
+  function replacer(key, value) {
+    if (typeof value === 'function') return undefined;
+    return value;
+  }
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+  }
+
+  /** ---------- Hook UI events ---------- **/
+  document.getElementById('food-create').addEventListener('click', ()=>{
+    const type = document.getElementById('food-type').value;
+    const name = document.getElementById('food-name').value.trim();
+    try {
+      const obj = FoodFactory(type, name || undefined);
+      addToList(obj, 'food-list');
+      document.getElementById('food-name').value = '';
+    } catch(e){ alert(e.message); }
+  });
+
+  document.getElementById('bank-create').addEventListener('click', ()=>{
+    const type = document.getElementById('bank-type').value;
+    const amt = document.getElementById('bank-initial').value.trim();
+    try {
+      const obj = BankFactory(type, amt || 0);
+      addToList(obj, 'bank-list');
+      document.getElementById('bank-initial').value = '';
+    } catch(e){ alert(e.message); }
+  });
+
+  document.getElementById('shop-create').addEventListener('click', ()=>{
+    const category = document.getElementById('shop-type').value;
+    const name = document.getElementById('shop-name').value.trim();
+    try {
+      const obj = ProductFactory(category, name || undefined);
+      addToList(obj, 'shop-list');
+      document.getElementById('shop-name').value = '';
+    } catch(e){ alert(e.message); }
+  });
+
+  document.getElementById('ride-create').addEventListener('click', ()=>{
+    const type = document.getElementById('ride-type').value;
+    const distance = document.getElementById('ride-distance').value.trim() || 1;
+    try {
+      const obj = RideFactory(type, distance);
+      addToList(obj, 'ride-list');
+      document.getElementById('ride-distance').value = '';
+    } catch(e){ alert(e.message); }
+  });
+</script>
+
+</body>
+</html>
